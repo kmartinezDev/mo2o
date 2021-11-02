@@ -26,19 +26,20 @@ class PunkController extends AbstractController
      */
     public function finder(Request $request) 
     {
-        $filter = $request->get('filter', '');
-        return $this->getData('/v2/beers', $filter, ['id','name','description'], 'finderStructure');
+        $params = ['food' => $request->get('filter', '')];
+        return $this->getData('/v2/beers', $params, ['id','name','description'], 'finderStructure');
     }
 
     /**
-     * @Route("/detail", name="get_details")
+     * @Route("/detail/{id}", name="get_details")
      */
-    public function detail(Request $request) 
+    public function detail(Request $request, int $id) 
     {
-        return $this->getData('/v2/beers', null, ['id','name','description', 'image_url', 'tagline', 'first_brewed'], 'detailStructure');
+        $params = ['ids' => $id];
+        return $this->getData('/v2/beers', $params, ['id','name','description', 'image_url', 'tagline', 'first_brewed'], 'detailStructure');
     }
 
-    private function getData($url, $filter = null, $param = null, $structure = null)
+    private function getData($url, $params = null, $param = null, $structure = null)
     {
 
         $response = new JsonResponse();
@@ -46,8 +47,8 @@ class PunkController extends AbstractController
         try {
             $options = [];
 
-            if($filter){
-                $options['query'] = ['food' => $filter];
+            if($params){
+                $options['query'] = $params;
             }
 
             $request = $this->client->get($url, $headers = null, $options);
